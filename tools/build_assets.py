@@ -237,6 +237,11 @@ def build():
     for k, im in inspector_frames(SRC / 'inspectorSheet.png').items():
         sprites[f'insp.{k}'] = im
 
+    # ---- ST1/4/6/9/11/EX boss battle frames (source faces RIGHT) ----
+    from boss_frames import frames as boss_frames
+    for k, im in boss_frames(SRC / 'bossSheetA.png').items():
+        sprites[f'boss.{k}'] = im
+
     # ---- whole images (keep their own keys in ART.paths) ----
     art = {
         'keyVisual': load('keyVisual').convert('RGB'),
