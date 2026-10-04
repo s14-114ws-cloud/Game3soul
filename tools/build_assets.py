@@ -206,6 +206,7 @@ def build():
         'keyVisual': load('keyVisual').convert('RGB'),
         'portraitSheet': white_to_alpha(load('portraitSheet')),
         'portraitSheet2': white_to_alpha(load('portraitSheet2')),
+        'allySheet': white_to_alpha(load('allySheet')),
     }
     return sprites, art
 
