@@ -110,6 +110,36 @@ def encode(im, quality=86):
     return 'data:image/webp;base64,' + base64.b64encode(raw).decode(), len(raw)
 
 
+# Labeled character sheet (2172x724, 11 cards per row with captions below).
+# Order, top row: ST7 inspector, ST1 nurse, ST2 lamp spirit, ST3 librarian, ST4 armor,
+# ST6 raven, ST9 inverted researcher, Shiki, K-04, ST12 weaver, EX zero observer.
+# Bottom row: Mashiro, Haru, Towa, Shigure, Mio, Ren, N-03, library-committee ghost,
+# child ghost, factory-worker ghost, grave monk.
+LABELED_CARDS = [
+    [(5, 211), (224, 425), (433, 644), (652, 854), (863, 1060), (1068, 1261), (1271, 1450),
+     (1458, 1632), (1640, 1809), (1818, 1992), (2000, 2166)],
+    [(6, 189), (197, 381), (389, 563), (572, 812), (821, 1015), (1024, 1219), (1228, 1409),
+     (1417, 1598), (1606, 1786), (1795, 1975), (1983, 2164)],
+]
+LABELED_ROWS = [(3, 325), (372, 665)]
+
+
+def labeled_sheet(cell=(200, 316)):
+    src = white_to_alpha(load('labeledSheet'))
+    out = Image.new('RGBA', (cell[0] * 11, cell[1] * 2), (0, 0, 0, 0))
+    for r, (cols, (y0, y1)) in enumerate(zip(LABELED_CARDS, LABELED_ROWS)):
+        for c, (x0, x1) in enumerate(cols):
+            card = trim(src.crop((x0, y0, x1, y1)), pad=0)
+            # cover-fit: centre-crop overly wide cards (Shigure) to the cell aspect
+            want = card.height * cell[0] / cell[1]
+            if card.width > want:
+                cut = (card.width - want) / 2
+                card = card.crop((round(cut), 0, round(card.width - cut), card.height))
+            card = card.resize(cell, Image.LANCZOS)
+            out.alpha_composite(card, (c * cell[0], r * cell[1]))
+    return out
+
+
 def build():
     sprites = {}
 
@@ -207,6 +237,7 @@ def build():
         'portraitSheet': white_to_alpha(load('portraitSheet')),
         'portraitSheet2': white_to_alpha(load('portraitSheet2')),
         'allySheet': white_to_alpha(load('allySheet')),
+        'portraitSheet3': labeled_sheet(),
     }
     return sprites, art
 
