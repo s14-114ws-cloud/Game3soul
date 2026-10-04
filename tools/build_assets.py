@@ -18,6 +18,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -230,6 +231,11 @@ def build():
     }
     for n, box in icons.items():
         sprites[f'icon.{n}'] = cell(ic, *box, 96)
+
+    # ---- ST7 boss battle frames (source faces RIGHT) ----
+    from inspector_frames import frames as inspector_frames
+    for k, im in inspector_frames(SRC / 'inspectorSheet.png').items():
+        sprites[f'insp.{k}'] = im
 
     # ---- whole images (keep their own keys in ART.paths) ----
     art = {
