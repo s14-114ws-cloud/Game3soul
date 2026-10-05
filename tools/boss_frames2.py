@@ -6,7 +6,7 @@ in that cell, plus a soft halo around it.
 import numpy as np
 from PIL import Image
 from scipy import ndimage
-from boss_frames import shrink
+from boss_frames import shrink, RES
 
 COLS_B = [(140, 348), (348, 596), (596, 832), (832, 1132), (1132, 1448)]
 COLS_C = [(150, 330), (330, 584), (584, 806), (806, 1124), (1124, 1448)]
@@ -54,5 +54,5 @@ def frames(src_dir):
         for boss, (y0, y1) in rows.items():
             names, scale = NAMES[boss]
             for (x0, x1), n in zip(cols, names):
-                out[f'{boss}.{n}'] = shrink(cut(sheet, x0, y0, x1, y1), scale)
+                out[f'{boss}.{n}'] = shrink(cut(sheet, x0, y0, x1, y1), scale * RES)
     return out

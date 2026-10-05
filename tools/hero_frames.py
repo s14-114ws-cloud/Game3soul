@@ -118,3 +118,27 @@ def frames(src_dir):
     out.update(cut_alpha(ren2, REN2_ITEMS, REN2, 'ren.x'))
     out.update(cut_alpha(mio2, MIO2_ITEMS, MIO2, 'mio.x'))
     return out
+
+
+# Ally NPC field sprites (transparent sheet, 5 figures standing in a row)
+NPC_ITEMS = [('ally_nurse', 8, 285), ('ally_mechanic', 285, 548), ('ally_miko', 548, 855),
+             ('ally_conductor', 845, 1170), ('ally_scholar', 1168, 1440)]
+
+
+def npc_frames(src_dir, height=40):
+    sheet = np.asarray(Image.open(src_dir / 'npcSheet.png').convert('RGBA'))
+    out = {}
+    for name, x0, x1 in NPC_ITEMS:
+        a = sheet[200:1000, x0:x1].copy()
+        lab, n = ndimage.label(ndimage.binary_dilation(a[:, :, 3] > 170, iterations=2))
+        sizes = ndimage.sum(np.ones_like(lab), lab, range(1, n + 1))
+        big = int(np.argmax(sizes)) + 1
+        keep = [i + 1 for i, s in enumerate(sizes) if s > sizes.max() * .02]
+        a[:, :, 3] = np.where(ndimage.binary_dilation(np.isin(lab, keep), iterations=6), a[:, :, 3], 0)
+        im = Image.fromarray(a, 'RGBA')
+        bb = Image.fromarray((a[:, :, 3] > 24).astype(np.uint8) * 255).getbbox()
+        im = im.crop(bb)
+        cols = np.where((np.asarray(im)[:, :, 3] > 170).any(0))[0]
+        cxs = x0 + bb[0] + (cols[0] + cols[-1]) / 2
+        out[f'npc.{name}'] = finish(im, x0, bb[0], cxs, height / im.height)
+    return out

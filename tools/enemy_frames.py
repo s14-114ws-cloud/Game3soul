@@ -6,7 +6,7 @@ Frames inside a row are found by splitting on columns where the opaque body
 """
 import numpy as np
 from PIL import Image
-from boss_frames import shrink
+from boss_frames import shrink, RES
 
 PANEL_X = [(5, 365), (368, 727), (728, 1088), (1090, 1446)]
 PANEL_ROWS = [[(54, 130), (132, 208), (209, 282)],
@@ -21,6 +21,10 @@ PANEL_STAGE = {(0, 0): 1, (0, 1): 2, (0, 2): 3, (0, 3): 4,
                (1, 0): 5, (1, 1): 6, (1, 2): 9, (1, 3): 8,
                (2, 0): 11, (2, 1): 10, (2, 2): 12, (2, 3): 12}
 # row target heights in the 384x216 game (source rows are ~70px)
+# ST7 subway sheet: ticket drone, subway ghost, tether-biter
+ST7_ROWS = [(140, 390), (460, 765), (838, 1020)]
+ST7_EW = (175, 205, 195)
+ST7_H = (24, 36, 22)
 ROW_H = {
     1: (36, 26, 22), 2: (30, 26, 22), 3: (22, 20, 36), 4: (38, 36, 28),
     5: (38, 34, 30), 6: (26, 24, 22), 9: (36, 30, 22), 8: (28, 22, 26),
@@ -47,12 +51,12 @@ def split_cols(a, min_w=10, gap=2):
     return cols
 
 
-def row_frames(sheet, x0, x1, y0, y1, height):
+def row_frames(sheet, x0, x1, y0, y1, height, ew=None):
     a = sheet[y0:y1, x0:x1]
     cols = split_cols(a)
     # split segments where touching sprites merged: cut at the thinnest columns
     core = (a[:, :, 3] > 170).sum(0).astype(float)
-    ew = max(30, (y1 - y0) * .75)
+    ew = ew or max(30, (y1 - y0) * .75)
     fixed = []
     for c0, c1 in cols:
         k = int(round((c1 - c0) / ew))
@@ -86,7 +90,7 @@ def row_frames(sheet, x0, x1, y0, y1, height):
         im = im.crop(bb)
         core_h = Image.fromarray((np.asarray(im)[:, :, 3] > 170).astype(np.uint8) * 255).getbbox()
         ch = (core_h[3] - core_h[1]) if core_h else im.height
-        out.append(shrink(im, height / max(ch, 1)))
+        out.append(shrink(im, height * RES / max(ch, 1)))
     return out
 
 
@@ -99,6 +103,10 @@ def frames(src_dir):
         for r, (y0, y1) in enumerate(PANEL_ROWS[pr]):
             for i, im in enumerate(row_frames(sheet, x0, x1, y0, y1, ROW_H[stage][r])):
                 out[f'e{stage}{sub}{r}.{i}'] = im
+    st7 = np.asarray(Image.open(src_dir / 'enemySheet7.png').convert('RGBA'))
+    for r, ((y0, y1), h, ew) in enumerate(zip(ST7_ROWS, ST7_H, ST7_EW)):
+        for i, im in enumerate(row_frames(st7, 20, 1440, y0, y1, h, ew=ew)):
+            out[f'e7a{r}.{i}'] = im
     for r, (x0, x1) in enumerate(EX_SPLIT):
         for i, im in enumerate(row_frames(sheet, x0, x1, *EX_ROW, ROW_H[13][r])):
             out[f'e13a{r}.{i}'] = im

@@ -7,6 +7,7 @@ standing pose is ~60 px tall in the 384x216 game canvas.
 import numpy as np
 from PIL import Image
 from scipy import ndimage
+from boss_frames import RES
 
 # (name, x0, y0, x1, y1)
 GROUPS = {
@@ -59,7 +60,7 @@ def frames(src_path):
             im = key_out(sheet[y0:y1, x0:x1])
             bb = im.getbbox()
             im = im.crop(bb)
-            w, h = max(1, round(im.width * scale)), max(1, round(im.height * scale))
+            w, h = max(1, round(im.width * scale * RES)), max(1, round(im.height * scale * RES))
             # downscale colour with LANCZOS on premultiplied data, then hard-threshold alpha for crisp pixels
             arr = np.asarray(im).astype(np.float32)
             arr[:, :, :3] *= arr[:, :, 3:4] / 255

@@ -57,6 +57,9 @@ BOSSES = {
 }
 
 
+RES = 2   # stored at 2x, drawn at half size on the 2x canvas
+
+
 def key_out(rgb):
     a = rgb.astype(int)
     grey = (np.abs(a - 83).max(2) <= 14) & (np.ptp(a, axis=2) <= 8)
@@ -103,5 +106,5 @@ def frames(src_path):
         for name, x0, y0, x1, y1 in items:
             im = key_out(sheet[y0:y1, x0:x1])
             im = im.crop(im.getbbox())
-            out[f'{boss}.{name}'] = shrink(im, scale)
+            out[f'{boss}.{name}'] = shrink(im, scale * RES)
     return out

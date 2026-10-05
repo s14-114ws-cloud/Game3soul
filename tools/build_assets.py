@@ -286,6 +286,9 @@ def build():
     from hero_frames import frames as hero_frames
     for k, v in hero_frames(SRC).items():
         sprites[f'hero.{k}'] = v
+    from hero_frames import npc_frames
+    for k, v in npc_frames(SRC).items():
+        sprites[f'hero.{k}'] = v
 
     # ---- stage backgrounds (216px tall) and title logo ----
     from stage_bgs import stage_backgrounds, title_logo
@@ -323,6 +326,10 @@ def main():
     for k, im in sprites.items():
         uri, n = encode(im)
         enc[k] = {'src': uri, 'w': im.width, 'h': im.height}
+        if k.startswith(('boss.', 'insp.', 'en.')) and k != 'insp.ticket':
+            enc[k]['s'] = 2
+        if k == 'insp.ticket':
+            enc[k]['s'] = 2
         if k in anchors:
             enc[k]['ax'] = anchors[k][0]
             if len(anchors[k]) > 1:
