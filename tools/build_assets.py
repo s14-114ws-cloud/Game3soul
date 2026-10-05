@@ -311,6 +311,11 @@ def build():
     for k, im in device_frames(SRC).items():
         sprites[f'prop.{k}'] = im
 
+    # ---- combat / soul effects ----
+    from fx_frames import frames as fx_frames
+    for k, im in fx_frames(SRC).items():
+        sprites[f'prop.{k}'] = im
+
     # ---- whole images (keep their own keys in ART.paths) ----
     art = {
         'keyVisual': load('keyVisual').convert('RGB'),
