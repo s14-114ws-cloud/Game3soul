@@ -269,6 +269,11 @@ def build():
     for k, im in boss_frames2(SRC).items():
         sprites[f'boss.{k}'] = im
 
+    # ---- Ren (player) and Mio (companion), with body-centre anchors ----
+    from hero_frames import frames as hero_frames
+    for k, v in hero_frames(SRC).items():
+        sprites[f'hero.{k}'] = v
+
     # ---- whole images (keep their own keys in ART.paths) ----
     art = {
         'keyVisual': load('keyVisual').convert('RGB'),
@@ -286,9 +291,16 @@ def main():
     sprites, art = build()
     total = 0
     enc = {}
+    anchors = {}
+    for k, im in list(sprites.items()):
+        if isinstance(im, tuple):
+            im, anchors[k] = im
+            sprites[k] = im
     for k, im in sprites.items():
         uri, n = encode(im)
         enc[k] = {'src': uri, 'w': im.width, 'h': im.height}
+        if k in anchors:
+            enc[k]['ax'] = anchors[k]
         total += n
     art_enc = {}
     for k, im in art.items():
