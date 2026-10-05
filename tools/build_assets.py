@@ -95,6 +95,19 @@ def hue_to_spirit(im):
 
 
 def encode(im, quality=86):
+    try:
+        return _encode(im, quality)
+    except AssertionError:
+        try:
+            return _encode(im, 96)   # tiny frames with soft glow need a finer quantiser
+        except AssertionError:
+            buf = io.BytesIO()
+            im.save(buf, 'WEBP', lossless=True, method=6)
+            raw = buf.getvalue()
+            return 'data:image/webp;base64,' + base64.b64encode(raw).decode(), len(raw)
+
+
+def _encode(im, quality=86):
     buf = io.BytesIO()
     if im.mode == 'RGBA' and np.asarray(im)[:, :, 3].min() == 255:
         im = im.convert('RGB')
@@ -279,6 +292,11 @@ def build():
     for n, im in stage_backgrounds(SRC).items():
         sprites[f'bg.{n}'] = im
     sprites['title.logo'] = title_logo(SRC)
+
+    # ---- regular enemies (per-stage sets) ----
+    from enemy_frames import frames as enemy_frames
+    for k, im in enemy_frames(SRC).items():
+        sprites[f'en.{k}'] = im
 
     # ---- whole images (keep their own keys in ART.paths) ----
     art = {
