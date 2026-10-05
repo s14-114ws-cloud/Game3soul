@@ -26,9 +26,9 @@ def stage_backgrounds(src):
     for i, (sheet, k) in enumerate(ORDER):
         x0, x1, y0, y1 = STRIPS[sheet][k]
         im = Image.open(src / f'{sheet}.png').convert('RGB').crop((x0, y0, x1, y1))
-        out[i + 1] = im.resize((round(im.width * GAME_H / im.height), GAME_H), Image.LANCZOS)
+        out[i + 1] = im if im.height <= GAME_H * 2 else im.resize((round(im.width * GAME_H * 2 / im.height), GAME_H * 2), Image.LANCZOS)
     ex = Image.open(src / 'bgEX.png').convert('RGB').crop((22, 380, 1426, 1050))
-    out[13] = ex.resize((round(ex.width * GAME_H / ex.height), GAME_H), Image.LANCZOS)
+    out[13] = ex.resize((round(ex.width * GAME_H * 2 / ex.height), GAME_H * 2), Image.LANCZOS)
     return out
 
 

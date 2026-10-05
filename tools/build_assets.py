@@ -94,7 +94,7 @@ def hue_to_spirit(im):
     return Image.fromarray(np.dstack([np.asarray(out), rgba[:, :, 3].astype(np.uint8)]), 'RGBA')
 
 
-def encode(im, quality=86):
+def encode(im, quality=93):
     try:
         return _encode(im, quality)
     except AssertionError:
@@ -111,7 +111,7 @@ def _encode(im, quality=86):
     buf = io.BytesIO()
     if im.mode == 'RGBA' and np.asarray(im)[:, :, 3].min() == 255:
         im = im.convert('RGB')
-    im.save(buf, 'WEBP', quality=quality, method=6, alpha_quality=90)
+    im.save(buf, 'WEBP', quality=quality, method=6, alpha_quality=100)
     raw = buf.getvalue()
     # verification: decode again and compare
     back = Image.open(io.BytesIO(raw))
@@ -301,6 +301,11 @@ def build():
     for k, im in enemy_frames(SRC).items():
         sprites[f'en.{k}'] = im
 
+    # ---- possessable animals/machines and gimmicks ----
+    from prop_frames import frames as prop_frames
+    for k, im in prop_frames(SRC).items():
+        sprites[f'prop.{k}'] = im
+
     # ---- whole images (keep their own keys in ART.paths) ----
     art = {
         'keyVisual': load('keyVisual').convert('RGB'),
@@ -326,8 +331,10 @@ def main():
     for k, im in sprites.items():
         uri, n = encode(im)
         enc[k] = {'src': uri, 'w': im.width, 'h': im.height}
-        if k.startswith(('boss.', 'insp.', 'en.')) and k != 'insp.ticket':
+        if k.startswith(('boss.', 'insp.', 'en.', 'prop.')) and k != 'insp.ticket':
             enc[k]['s'] = 2
+        if k.startswith('bg.'):
+            enc[k]['s'] = round(im.height / 216, 4)
         if k == 'insp.ticket':
             enc[k]['s'] = 2
         if k in anchors:
