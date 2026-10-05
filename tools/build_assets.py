@@ -141,6 +141,28 @@ def labeled_sheet(cell=(200, 316)):
     return out
 
 
+# Boss face sheet (2172x724): 12 cards per row, top row = normal, bottom row = angry.
+# Column order by character: nurse, lantern spirit, librarian, armor, golem, raven,
+# inverted researcher (ST9), soul-core master (ST8), K-04 (ST11), Shiki (ST10),
+# weaver mother (ST12), zero observer (EX). (The sheet's ST7-ST11 captions are shifted.)
+BOSS_FACE_COLS = [(5, 170), (177, 348), (353, 522), (533, 694), (706, 864), (871, 1039), (1045, 1209),
+                  (1221, 1390), (1396, 1562), (1567, 1738), (1744, 1951), (1958, 2166)]
+BOSS_FACE_ROWS = [(100, 399), (410, 711)]
+
+
+def boss_face_sheet(cell=(200, 316)):
+    src = load('bossFaces')
+    out = Image.new('RGBA', (cell[0] * 12, cell[1] * 2), (0, 0, 0, 0))
+    for r, (y0, y1) in enumerate(BOSS_FACE_ROWS):
+        for c, (x0, x1) in enumerate(BOSS_FACE_COLS):
+            card = src.crop((x0, y0, x1, y1))
+            want = card.height * cell[0] / cell[1]
+            if card.width > want:
+                cut = (card.width - want) / 2
+                card = card.crop((round(cut), 0, round(card.width - cut), card.height))
+            out.alpha_composite(card.resize(cell, Image.LANCZOS), (c * cell[0], r * cell[1]))
+    return out
+
 def build():
     sprites = {}
 
@@ -249,6 +271,7 @@ def build():
         'portraitSheet2': white_to_alpha(load('portraitSheet2')),
         'allySheet': white_to_alpha(load('allySheet')),
         'portraitSheet3': labeled_sheet(),
+        'bossFaceSheet': boss_face_sheet(),
     }
     return sprites, art
 
