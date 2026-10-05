@@ -306,6 +306,11 @@ def build():
     for k, im in prop_frames(SRC).items():
         sprites[f'prop.{k}'] = im
 
+    # ---- stage devices and boss-arena set pieces ----
+    from device_frames import frames as device_frames
+    for k, im in device_frames(SRC).items():
+        sprites[f'prop.{k}'] = im
+
     # ---- whole images (keep their own keys in ART.paths) ----
     art = {
         'keyVisual': load('keyVisual').convert('RGB'),
