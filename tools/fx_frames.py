@@ -26,6 +26,17 @@ FIXED = [  # (prefix, sheet, y0, y1, x cuts, logical height of the whole band)
     ('sigD', 'fxSheetD', 494, 744, [40, 400, 740, 1060, 1320], 26),
     ('chain', 'fxSheetD', 755, 868, [5, 330, 620, 925, 1435], 9),
     ('chainBrk', 'fxSheetD', 885, 1062, [20, 400, 715, 1070, 1420], 15),
+    ('erase', 'fxSheetE', 25, 290, [25, 300, 665, 1100, 1660], 70),
+    ('sever', 'fxSheetE', 325, 540, [30, 230, 610, 1100, 1660], 48),
+    ('cpRing', 'fxSheetE', 545, 800, [40, 250, 550, 955, 1660], 40),
+    ('trail', 'fxSheetE', 808, 915, [25, 230, 500, 740, 1040, 1300, 1640], 12),
+    ('shard', 'fxSheetF', 22, 175, [50, 215, 405, 600, 780, 975], 20),
+    ('shardGet', 'fxSheetF', 22, 175, [975, 1150, 1330], 20),
+    ('poss', 'fxSheetF', 192, 392, [30, 255, 460, 645, 895], 36),
+    ('lamp', 'fxSheetF', 408, 568, [30, 195, 380], 22),
+    ('train', 'fxSheetF', 408, 568, [385, 1000, 1645], 28),
+    ('steam', 'fxSheetF', 572, 767, [35, 225, 460, 700, 940], 30),
+    ('ifield', 'fxSheetF', 775, 922, [25, 430, 830, 1230, 1645], 26),
 ]
 SINGLE = [  # (key, sheet, box, logical height)
     ('linkG', 'fxSheetA', (76, 860, 146, 980), 7), ('linkR', 'fxSheetA', (800, 862, 866, 982), 7),
