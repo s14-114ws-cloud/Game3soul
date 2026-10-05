@@ -11,7 +11,7 @@ from scipy import ndimage
 # (name, x0, y0, x1, y1)
 GROUPS = {
     # basic motion row, source idle height ~140 px
-    'motion': (60 / 140, [
+    'motion': (60 * 1.25 / 140, [
         ('idle1', 468, 62, 570, 210), ('idle2', 572, 62, 682, 210), ('idle3', 688, 62, 796, 210),
         ('walk1', 805, 62, 884, 210), ('walk2', 898, 62, 982, 210), ('walk3', 994, 62, 1072, 210),
         ('back', 1084, 62, 1174, 210), ('guard', 1184, 62, 1300, 210), ('lantern', 1300, 58, 1396, 210),
@@ -20,12 +20,12 @@ GROUPS = {
     # a single flying ticket (projectile), source ~44 px wide -> 12 px
     'ticket': (12 / 44, [('ticket', 1398, 330, 1470, 382)]),
     # hit / damage row, source height ~87 px
-    'hit': (60 / 87, [
+    'hit': (60 * 1.25 / 87, [
         ('hit1', 22, 740, 112, 824), ('hit2', 124, 740, 214, 824), ('hitBig', 228, 740, 326, 824),
         ('dissolve', 338, 738, 444, 824),
     ]),
     # final phase (large form), source height ~232 px -> 86 px in game
-    'final': (86 / 232, [
+    'final': (86 * 1.25 / 232, [
         ('final1', 484, 772, 694, 984), ('final2', 708, 772, 992, 984), ('final3', 998, 772, 1226, 984),
         ('final4', 1230, 772, 1528, 984),
     ]),

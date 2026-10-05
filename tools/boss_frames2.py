@@ -14,12 +14,12 @@ ROWS_B = {'soulCore': (0, 198), 'shiki': (380, 572), 'weaver': (730, 908)}
 ROWS_C = {'lantern': (148, 308), 'scribe': (300, 462), 'golem': (610, 772)}
 # frame names per column; scale -> standing pose about the boss hitbox height
 NAMES = {
-    'soulCore': (['idle1', 'idle2', 'atk1', 'atk2', 'burst'], 60 / 150),
-    'shiki': (['idle1', 'atk1', 'atk2', 'barrage', 'final'], 58 / 140),
-    'weaver': (['idle1', 'idle2', 'atk1', 'p2', 'p3'], 66 / 150),
-    'lantern': (['idle1', 'idle2', 'idle3', 'atk1', 'burst'], 54 / 130),
-    'scribe': (['idle1', 'idle2', 'idle3', 'atk1', 'final'], 54 / 130),
-    'golem': (['idle1', 'walk', 'idle2', 'slam', 'core'], 58 / 125),
+    'soulCore': (['idle1', 'idle2', 'atk1', 'atk2', 'burst'], 60 * 1.25 / 150),
+    'shiki': (['idle1', 'atk1', 'atk2', 'barrage', 'final'], 58 * 1.25 / 140),
+    'weaver': (['idle1', 'idle2', 'atk1', 'p2', 'p3'], 66 * 1.25 / 150),
+    'lantern': (['idle1', 'idle2', 'idle3', 'atk1', 'burst'], 54 * 1.25 / 130),
+    'scribe': (['idle1', 'idle2', 'idle3', 'atk1', 'final'], 54 * 1.25 / 130),
+    'golem': (['idle1', 'walk', 'idle2', 'slam', 'core'], 58 * 1.25 / 125),
 }
 
 
