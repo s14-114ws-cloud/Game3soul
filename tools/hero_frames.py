@@ -49,15 +49,60 @@ def key_dark(rgb, bg):
     return Image.fromarray(np.dstack([col, al * 255]).astype(np.uint8), 'RGBA')
 
 
+RES = 2   # heroes are stored at 2x and drawn at half size on the 2x canvas
+
+
+def finish(im, x0, bbx, cxs, scale):
+    small = shrink(im, scale * RES)
+    ax = round((cxs - x0 - bbx) * small.width / im.width)
+    return (small, ax, RES)
+
+
 def cut(sheet, bg, scale, items, prefix):
     out = {}
     for name, x0, y0, x1, y1, cxs in items:
         im = key_dark(sheet[y0:y1, x0:x1], bg)
         bb = Image.fromarray((np.asarray(im)[:, :, 3] > 30).astype(np.uint8) * 255).getbbox()
-        im = im.crop(bb)
-        small = shrink(im, scale)
-        ax = round((cxs - x0 - bb[0]) * small.width / im.width)
-        out[f'{prefix}.{name}'] = (small, ax)
+        out[f'{prefix}.{name}'] = finish(im.crop(bb), x0, bb[0], cxs, scale)
+    return out
+
+
+# second sheets (transparent): soul release, left-behind body, ACT, spirit hurt, death; Mio expressions
+REN2 = 38 / 270
+REN2_ITEMS = [
+    ('rel1', 206, 40, 352, 300, 275), ('rel2', 372, 30, 562, 300, 462), ('rel3', 576, 20, 782, 318, 690),
+    ('limp1', 60, 298, 190, 548, 126), ('limp2', 252, 302, 384, 548, 318), ('limp3', 448, 302, 582, 548, 515),
+    ('sit1', 652, 386, 866, 548, 740), ('sit2', 870, 386, 1084, 548, 960), ('sit3', 1090, 404, 1372, 548, 1190),
+    ('act1', 14, 546, 196, 750, 105), ('act2', 268, 576, 446, 748, 360), ('act3', 515, 576, 674, 748, 600),
+    ('act4', 744, 580, 893, 748, 810), ('act5', 989, 572, 1140, 748, 1070), ('act6', 1214, 570, 1370, 748, 1290),
+    ('shurt1', 40, 746, 270, 936, 150), ('shurt2', 316, 750, 572, 956, 440), ('shurt3', 620, 758, 882, 944, 750),
+    ('shurt4', 886, 766, 1125, 962, 1005),
+    ('die1', 22, 902, 172, 1080, 95), ('die2', 177, 922, 321, 1080, 250), ('die3', 326, 954, 487, 1080, 405),
+    ('die4', 492, 968, 683, 1080, 590), ('die5', 676, 988, 925, 1080, 800), ('die6', 924, 992, 1183, 1080, 1055),
+    ('die7', 1185, 1000, 1440, 1080, 1310),
+]
+MIO2 = 25 / 330
+MIO2_ITEMS = [
+    ('reach', 27, 56, 370, 416, 200), ('surprised', 373, 70, 716, 410, 545), ('hurt', 730, 66, 1116, 406, 920),
+    ('worry', 1094, 62, 1410, 413, 1250), ('pray1', 29, 450, 365, 766, 197), ('pray2', 385, 450, 699, 766, 542),
+    ('shiver', 740, 455, 1041, 779, 890), ('pray3', 1096, 451, 1405, 780, 1250),
+    ('reach2', 250, 786, 708, 1068, 470), ('calm', 644, 787, 1192, 1072, 900),
+]
+
+
+def cut_alpha(sheet, items, scale, prefix):
+    """Keep opaque bodies whose centre lies in the cell (+ soft halo); anchor = given body x."""
+    out = {}
+    for name, x0, y0, x1, y1, cxs in items:
+        a = sheet[y0:y1, x0:x1].copy()
+        lab, n = ndimage.label(ndimage.binary_dilation(a[:, :, 3] > 170, iterations=2))
+        keep = [i + 1 for i, sl in enumerate(ndimage.find_objects(lab))
+                if sl and (lab[sl] == i + 1).sum() > 60]
+        halo = ndimage.binary_dilation(np.isin(lab, keep), iterations=7)
+        a[:, :, 3] = np.where(halo, a[:, :, 3], 0)
+        im = Image.fromarray(a, 'RGBA')
+        bb = Image.fromarray((a[:, :, 3] > 24).astype(np.uint8) * 255).getbbox()
+        out[f'{prefix}.{name}'] = finish(im.crop(bb), x0, bb[0], cxs, scale)
     return out
 
 
@@ -68,4 +113,8 @@ def frames(src_dir):
     for kind, (scale, items) in REN.items():
         out.update(cut(ren, REN_BG, scale, items, 'ren.' + kind))
     out.update(cut(mio, MIO_BG, MIO[0], MIO[1], 'mio'))
+    ren2 = np.asarray(Image.open(src_dir / 'renSheet2.png').convert('RGBA'))
+    mio2 = np.asarray(Image.open(src_dir / 'mioSheet2.png').convert('RGBA'))
+    out.update(cut_alpha(ren2, REN2_ITEMS, REN2, 'ren.x'))
+    out.update(cut_alpha(mio2, MIO2_ITEMS, MIO2, 'mio.x'))
     return out

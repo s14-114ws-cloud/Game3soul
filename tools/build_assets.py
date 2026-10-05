@@ -318,13 +318,15 @@ def main():
     anchors = {}
     for k, im in list(sprites.items()):
         if isinstance(im, tuple):
-            im, anchors[k] = im
+            im, anchors[k] = im[0], im[1:]
             sprites[k] = im
     for k, im in sprites.items():
         uri, n = encode(im)
         enc[k] = {'src': uri, 'w': im.width, 'h': im.height}
         if k in anchors:
-            enc[k]['ax'] = anchors[k]
+            enc[k]['ax'] = anchors[k][0]
+            if len(anchors[k]) > 1:
+                enc[k]['s'] = anchors[k][1]
         total += n
     art_enc = {}
     for k, im in art.items():
