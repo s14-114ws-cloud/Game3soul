@@ -274,6 +274,12 @@ def build():
     for k, v in hero_frames(SRC).items():
         sprites[f'hero.{k}'] = v
 
+    # ---- stage backgrounds (216px tall) and title logo ----
+    from stage_bgs import stage_backgrounds, title_logo
+    for n, im in stage_backgrounds(SRC).items():
+        sprites[f'bg.{n}'] = im
+    sprites['title.logo'] = title_logo(SRC)
+
     # ---- whole images (keep their own keys in ART.paths) ----
     art = {
         'keyVisual': load('keyVisual').convert('RGB'),
@@ -336,7 +342,7 @@ def main():
     qa = Image.new('RGBA', (1600, 2400), (40, 40, 48, 255))
     x = y = rowh = 0
     for k, im in sprites.items():
-        t = im.copy()
+        t = im.convert("RGBA")
         t.thumbnail((150, 120))
         if x + t.width > 1600:
             x, y, rowh = 0, y + rowh + 6, 0
