@@ -316,6 +316,11 @@ def build():
     for k, im in fx_frames(SRC).items():
         sprites[f'prop.{k}'] = im
 
+    # ---- screen atmosphere (rain, petals, embers, fog, spirit haze) ----
+    from atmo_frames import frames as atmo_frames
+    for k, im in atmo_frames(SRC).items():
+        sprites[f'prop.{k}'] = im
+
     # ---- whole images (keep their own keys in ART.paths) ----
     art = {
         'keyVisual': load('keyVisual').convert('RGB'),
