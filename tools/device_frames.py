@@ -49,7 +49,7 @@ SETS = [
     ('set.9', 'setSheet3', (0, 0, 724, 513)), ('set.10', 'setSheet3', (724, 0, 1448, 513)),
     ('set.11', 'setSheet3', (0, 513, 724, 1086)), ('set.12', 'setSheet3', (724, 513, 1448, 1086)),
     ('set.13', 'setSheet4', (0, 525, 724, 1086)), ('set.13pod', 'setSheet4', (0, 0, 724, 540)),
-    ('set.13origin', 'setSheet4', (724, 0, 1448, 540)), ('set.true', 'setSheet4', (724, 525, 1448, 1086)),
+('set.13podHi', 'setSheet4', (0, 0, 724, 540)),     ('set.13origin', 'setSheet4', (724, 0, 1448, 540)), ('set.true', 'setSheet4', (724, 525, 1448, 1086)),
 ]
 SET_H = 128
 
@@ -90,5 +90,6 @@ def frames(src):
     for key, sheet, box in SETS:
         a = np.asarray(Image.open(src / f'{sheet}.png').convert('RGBA'))
         im = cut_quadrant(a, *box, pad=0 if sheet == 'setSheet3' else 60)
-        out[key] = shrink(im, SET_H * RES / im.height)
+        h = 190 if key.endswith('Hi') else SET_H   # cutscene version is larger
+        out[key] = shrink(im, h * RES / im.height)
     return out
