@@ -9,9 +9,9 @@
 <title>SOUL TETHER - Title UI v51</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#03060c;color:#fff;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;touch-action:none}
-#app{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 18%,#13233b,#050914 68%)}
-#shell{position:relative;width:min(100vw,calc(100vh * 16 / 9));height:min(100vh,calc(100vw * 9 / 16));overflow:hidden;background:#08111b;box-shadow:0 0 44px #000}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-touch-callout:none;overscroll-behavior:none;background:#03060c;color:#fff;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;touch-action:none}
+#app{position:fixed;left:0;top:0;width:100%;height:var(--appH,100dvh);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 18%,#13233b,#050914 68%)}
+#shell{position:relative;width:min(var(--safeW,100vw),calc(var(--safeH,100dvh) * 16 / 9));height:min(var(--safeH,100dvh),calc(var(--safeW,100vw) * 9 / 16));overflow:hidden;background:#08111b;box-shadow:0 0 44px #000}
 canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges}
 #touch{position:absolute;inset:0;pointer-events:none;z-index:10}
 .cluster{position:absolute;bottom:max(9px,env(safe-area-inset-bottom));display:grid;gap:6px;pointer-events:auto}
@@ -86,11 +86,14 @@ canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelate
 @keyframes v49ArtToast{0%{opacity:0;transform:translate(-50%,-38%)}12%,74%{opacity:1;transform:translate(-50%,-50%)}100%{opacity:0;transform:translate(-50%,-62%)}}
 @media(max-height:430px){#galleryBtn{top:max(6px,env(safe-area-inset-top));min-height:32px}#artGalleryGrid{grid-template-columns:repeat(auto-fit,minmax(118px,1fr))}.artCard{min-height:148px}.artCard .artMedia{height:92px}}
 
-:root{--ctl-opacity:.72;--ctl-scale:1;--ui-font-scale:1}
+:root{--sal:env(safe-area-inset-left,0px);--sar:env(safe-area-inset-right,0px);--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--ctl-opacity:.72;--ctl-scale:1;--ui-font-scale:1}
 body.largeText{--ui-font-scale:1.16}
 body.highContrast canvas{filter:contrast(1.14) saturate(1.08)}
 #controls,#touchControls,.controls,.touch-controls{opacity:var(--ctl-opacity)!important;transform:scale(var(--ctl-scale));transform-origin:center bottom}
-button,.btn{touch-action:manipulation}
+button,.btn{touch-action:none}
+#stageSelect,.sysGrid,#helpBox,#artGallery,#archivePanel,#artStillBody,#audioSettings,#accessSettings{touch-action:pan-y}
+img{-webkit-user-drag:none;pointer-events:none}
+#titleLogoImg{pointer-events:none}
 #accessSettings{position:fixed;left:max(10px,env(safe-area-inset-left));top:max(52px,env(safe-area-inset-top));z-index:61;width:min(300px,80vw);padding:10px 12px;background:rgba(7,9,18,.97);border:1px solid #59617b;border-radius:8px;color:#eef5ff;font:calc(12px * var(--ui-font-scale)) monospace;display:none}
 #accessSettings label{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin:8px 0}
 #accessSettings .rangeRow{grid-template-columns:95px 1fr 34px}
@@ -197,6 +200,23 @@ body.uiCompact #dialogueTools{right:max(58px,calc(env(safe-area-inset-right) + 5
 #audioSettings,#accessSettings{left:50%!important;right:auto!important;top:50%!important;transform:translate(-50%,-50%);z-index:96;border-color:rgba(230,180,95,.6);background:rgba(10,10,20,.97);box-shadow:0 12px 40px rgba(0,0,0,.7)}
 @media (max-height:430px){#overlayCard .menuButton.sprited{width:60px;height:66px}#overlayCard{padding:2px 8px 4px}#overlayText{font-size:10px;margin-bottom:4px}}
 </style>
+<script>
+// v51 iOS Safari: size to the visible viewport (tab bar / toolbar excluded) and block zoom gestures
+(function(){
+ var root=document.documentElement;
+ function fit(){var vv=window.visualViewport,w=vv?vv.width:window.innerWidth,h=vv?vv.height:window.innerHeight;
+  var cs=getComputedStyle(root),sl=parseFloat(cs.getPropertyValue('--sal'))||0,sr=parseFloat(cs.getPropertyValue('--sar'))||0,st=parseFloat(cs.getPropertyValue('--sat'))||0,sb=parseFloat(cs.getPropertyValue('--sab'))||0;
+  root.style.setProperty('--appH',h+'px');root.style.setProperty('--safeW',Math.max(100,w-sl-sr)+'px');root.style.setProperty('--safeH',Math.max(100,h-st-sb)+'px');
+  if(window.scrollX||window.scrollY)window.scrollTo(0,0)}
+ ['resize','orientationchange'].forEach(function(e){window.addEventListener(e,function(){fit();setTimeout(fit,250)})});
+ if(window.visualViewport){visualViewport.addEventListener('resize',fit);visualViewport.addEventListener('scroll',fit)}
+ document.addEventListener('DOMContentLoaded',fit);fit();
+ ['gesturestart','gesturechange','gestureend'].forEach(function(e){document.addEventListener(e,function(ev){ev.preventDefault()},{passive:false})});
+ document.addEventListener('touchmove',function(e){if(e.touches.length>1||(e.scale&&e.scale!==1))e.preventDefault()},{passive:false});
+ document.addEventListener('dblclick',function(e){e.preventDefault()},{passive:false});
+ var last=0;document.addEventListener('touchend',function(e){var now=Date.now();if(now-last<350&&!e.target.closest('[data-key]')){e.preventDefault();var t=e.target;if(t&&t.click)t.click()}last=now},{passive:false});
+})();
+</script>
 </head>
 <body data-realm="body">
 <div id="app"><div id="shell">
