@@ -321,6 +321,10 @@ def build():
     for k, im in atmo_frames(SRC).items():
         sprites[f'prop.{k}'] = im
 
+    # ---- story CG stills (full screen, drawn at 384x216 logical) ----
+    for k in ['cgOpen', 'cgBlade', 'cgM10', 'cgDrag', 'cgMorning', 'cgWake', 'cgSunrise']:
+        sprites[f'prop.cg.{k}'] = load(k).convert('RGB')
+
     # ---- whole images (keep their own keys in ART.paths) ----
     art = {
         'keyVisual': load('keyVisual').convert('RGB'),
@@ -348,6 +352,8 @@ def main():
         enc[k] = {'src': uri, 'w': im.width, 'h': im.height}
         if k.startswith(('boss.', 'insp.', 'en.', 'prop.')) and k != 'insp.ticket':
             enc[k]['s'] = 2
+        if k.startswith('prop.cg.'):
+            enc[k]['s'] = round(im.width / 384, 4)
         if k.startswith('bg.'):
             enc[k]['s'] = round(im.height / 216, 4)
         if k == 'insp.ticket':
