@@ -322,7 +322,8 @@ def build():
         sprites[f'prop.{k}'] = im
 
     # ---- story CG stills (full screen, drawn at 384x216 logical) ----
-    for k in ['cgOpen', 'cgBlade', 'cgM10', 'cgDrag', 'cgMorning', 'cgWake', 'cgSunrise']:
+    for k in ['cgOpen', 'cgBlade', 'cgM10', 'cgDrag', 'cgMorning', 'cgWake', 'cgSunrise',
+              'cgCrow', 'cgTrain', 'cgZeroRoom', 'cgObserver']:
         sprites[f'prop.cg.{k}'] = load(k).convert('RGB')
 
     # ---- stage-select thumbnails (480x270) ----
