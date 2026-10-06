@@ -233,6 +233,12 @@ def build():
         sprites[f'ctl.spirit.{n}'] = cell(sc, arrows[i][0], 716, arrows[i][1], 890, 140)
     for i, n in enumerate(['left', 'left.on', 'right', 'right.on']):
         sprites[f'ctl.spirit.{n}'] = cell(sc, arrows[i][0], 884, arrows[i][1], 1070, 140)
+    # newer crescent-moon spirit set replaces the above; JUMP becomes DASH in spirit mode
+    from spirit_ctl import controls as spirit_controls
+    for k, im in spirit_controls(SRC, {'up': 140, 'down': 140, 'left': 140, 'right': 140}).items():
+        sprites[f'ctl.spirit.{k}'] = im
+    sprites['ctl.spirit.jump'] = sprites['ctl.spirit.dash']
+    sprites['ctl.spirit.jump.on'] = sprites['ctl.spirit.dash.on']
 
     # ---- frame kit (body), spirit variant derived by hue shift until a real one exists ----
     fk = load('frameKit')
