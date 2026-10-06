@@ -292,6 +292,9 @@ def build():
     from hero_frames import frames as hero_frames
     for k, v in hero_frames(SRC).items():
         sprites[f'hero.{k}'] = v
+    from spirit_dash import frames as dash_frames
+    for k, v in dash_frames(SRC).items():
+        sprites[f'hero.{k}'] = v
     from hero_frames import npc_frames
     for k, v in npc_frames(SRC).items():
         sprites[f'hero.{k}'] = v
