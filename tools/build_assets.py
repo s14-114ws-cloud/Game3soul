@@ -238,6 +238,8 @@ def build():
     for k, im in spirit_controls(SRC, {'up': 140, 'down': 140, 'left': 140, 'right': 140}).items():
         sprites[f'ctl.spirit.{k}'] = im
     sprites['ctl.spirit.jump'] = sprites['ctl.spirit.dash']
+    from spirit_ctl import pads as dpad_sprites
+    sprites.update(dpad_sprites(SRC))
     sprites['ctl.spirit.jump.on'] = sprites['ctl.spirit.dash.on']
 
     # ---- frame kit (body), spirit variant derived by hue shift until a real one exists ----
@@ -332,7 +334,7 @@ def build():
 
     # ---- story CG stills (full screen, drawn at 384x216 logical) ----
     for k in ['cgOpen', 'cgBlade', 'cgM10', 'cgDrag', 'cgMorning', 'cgWake', 'cgSunrise',
-              'cgCrow', 'cgTrain', 'cgZeroRoom', 'cgObserver']:
+              'cgCrow', 'cgTrain', 'cgZeroRoom', 'cgObserver', 'cgK04']:
         sprites[f'prop.cg.{k}'] = load(k).convert('RGB')
 
     # ---- stage-select thumbnails (480x270) ----

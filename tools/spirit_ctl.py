@@ -60,3 +60,32 @@ def controls(src, sizes):
         out[k] = im
         out[k + '.on'] = lit(im)
     return out
+
+
+PADS = {'pad': (785, 600, 1150, 1015), 'pad.alt': (1150, 600, 1530, 1015)}
+# body pad: the spirit pad gradient-mapped to the bronze/amber body palette
+BRONZE = [(0, (10, 12, 22)), (.18, (24, 22, 30)), (.4, (92, 52, 24)), (.62, (196, 120, 52)),
+          (.82, (250, 196, 120)), (1, (255, 244, 220))]
+BRONZE_LIT = [(0, (14, 12, 20)), (.18, (40, 24, 20)), (.4, (140, 60, 20)), (.62, (240, 140, 50)),
+              (.82, (255, 210, 130)), (1, (255, 250, 230))]
+
+
+def gmap(im, stops):
+    a = np.asarray(im).astype(np.float32)
+    lum = (a[..., 0] * .3 + a[..., 1] * .5 + a[..., 2] * .2) / 255
+    out = np.zeros(a.shape[:2] + (3,))
+    for c in range(3):
+        out[..., c] = np.interp(lum, [t for t, _ in stops], [col[c] for _, col in stops])
+    return Image.fromarray(np.dstack([out, a[..., 3]]).astype(np.uint8), 'RGBA')
+
+
+def pads(src, width=300):
+    arr = np.asarray(Image.open(src / 'spiritControl2.png').convert('RGB'))
+    bg = tuple(int(v) for v in arr[5, 5])
+    cut = {}
+    for k, (x0, y0, x1, y1) in PADS.items():
+        im = key_flood(arr[y0:y1, x0:x1], bg)
+        # same canvas size for idle/lit so the cross does not jump when pressed
+        cut[k] = im.resize((width, round(width * 1.09)), Image.LANCZOS)
+    return {'ctl.spirit.pad': cut['pad'], 'ctl.spirit.pad.on': cut['pad.alt'],
+            'ctl.body.pad': gmap(cut['pad'], BRONZE), 'ctl.body.pad.on': gmap(cut['pad.alt'], BRONZE_LIT)}
