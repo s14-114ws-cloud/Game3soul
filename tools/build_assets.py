@@ -325,6 +325,11 @@ def build():
     for k in ['cgOpen', 'cgBlade', 'cgM10', 'cgDrag', 'cgMorning', 'cgWake', 'cgSunrise']:
         sprites[f'prop.cg.{k}'] = load(k).convert('RGB')
 
+    # ---- stage-select thumbnails (480x270) ----
+    from stage_thumbs import thumbs
+    for n, im in thumbs(SRC).items():
+        sprites[f'thumb.{n}'] = im
+
     # ---- whole images (keep their own keys in ART.paths) ----
     art = {
         'keyVisual': load('keyVisual').convert('RGB'),
