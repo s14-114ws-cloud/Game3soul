@@ -342,6 +342,11 @@ def build():
     for n, im in thumbs(SRC).items():
         sprites[f'thumb.{n}'] = im
 
+    sprites['prop.cg.cgBed'] = load('cgBed').convert('RGB').crop((0, 100, 1448, 915))   # 4:3 -> 16:9
+    from st1_frames import frames as st1_frames
+    for k, im in st1_frames(SRC).items():
+        sprites[f'prop.{k}'] = im
+
     # ---- whole images (keep their own keys in ART.paths) ----
     art = {
         'keyVisual': load('keyVisual').convert('RGB'),
