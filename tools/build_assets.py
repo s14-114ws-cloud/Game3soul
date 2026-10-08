@@ -334,7 +334,7 @@ def build():
 
     # ---- story CG stills (full screen, drawn at 384x216 logical) ----
     for k in ['cgOpen', 'cgBlade', 'cgM10', 'cgDrag', 'cgMorning', 'cgWake', 'cgSunrise',
-              'cgCrow', 'cgTrain', 'cgZeroRoom', 'cgObserver', 'cgK04']:
+              'cgCrow', 'cgTrain', 'cgZeroRoom', 'cgObserver', 'cgK04', 'cgMeet']:
         sprites[f'prop.cg.{k}'] = load(k).convert('RGB')
 
     # ---- stage-select thumbnails (480x270) ----
@@ -342,6 +342,9 @@ def build():
     for n, im in thumbs(SRC).items():
         sprites[f'thumb.{n}'] = im
 
+    from stage_thumbs import stills as stage_stills
+    for k, im in stage_stills(SRC).items():
+        sprites[f'prop.cg.{k}'] = im
     sprites['prop.cg.cgBed'] = load('cgBed').convert('RGB').crop((0, 100, 1448, 915))   # 4:3 -> 16:9
     from st1_frames import frames as st1_frames
     for k, im in st1_frames(SRC).items():

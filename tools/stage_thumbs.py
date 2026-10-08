@@ -30,3 +30,16 @@ def thumbs(src):
     out[2] = fit(Image.open(src / 'thumbST2.png').convert('RGB'))
     out[13] = fit(Image.open(src / 'thumbEX.png').convert('RGB').crop((60, 100, 1390, 848)))
     return out
+
+
+def stills(src):
+    """Full-resolution 16:9 versions for story stills: cgSt1..cgSt13 (sheet art, incl. the
+    original ST2 street card) plus cgLantern (the ST2 lantern-boss picture)."""
+    out = {}
+    for si, sheet in enumerate(SHEETS):
+        im = Image.open(src / f'{sheet}.png').convert('RGB')
+        for c, (x0, y0, x1) in enumerate(CELLS):
+            out[f'cgSt{si * 4 + c + 1}'] = im.crop((x0, y0, x1, y0 + (x1 - x0) * 9 // 16))
+    out['cgSt13'] = Image.open(src / 'thumbEX.png').convert('RGB').crop((60, 100, 1390, 848))
+    out['cgLantern'] = Image.open(src / 'thumbST2.png').convert('RGB')
+    return out
