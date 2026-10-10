@@ -346,6 +346,12 @@ def build():
     for k, im in stage_stills(SRC).items():
         sprites[f'prop.cg.{k}'] = im
     sprites['prop.cg.cgBed'] = load('cgBed').convert('RGB').crop((0, 100, 1448, 915))   # 4:3 -> 16:9
+    from memory_frames import frames as memory_frames
+    for k, v in memory_frames(SRC).items():
+        sprites[f'prop.{k}'] = v
+    from floor_tiles import frames as tile_frames
+    for k, v in tile_frames(SRC).items():
+        sprites[f'prop.{k}'] = v
     from st1_frames import frames as st1_frames
     for k, im in st1_frames(SRC).items():
         sprites[f'prop.{k}'] = im
