@@ -352,6 +352,9 @@ def build():
     from gimmick_frames import frames as gimmick_frames
     for k, v in gimmick_frames(SRC).items():
         sprites[f'prop.{k}'] = v
+    from gimmick_frames2 import frames as gimmick_frames2
+    for k, v in gimmick_frames2(SRC).items():
+        sprites[f'prop.{k}'] = v
     from floor_tiles import frames as tile_frames
     for k, v in tile_frames(SRC).items():
         sprites[f'prop.{k}'] = v
