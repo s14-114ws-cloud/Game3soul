@@ -8,6 +8,8 @@ import base64, json, subprocess, sys, tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# superseded by the Suno ending songs (kept in the repo, not embedded, to stay under 64 MB)
+EXCLUDE = {'bgm_ending', 'bgm_true_end', 'bgm_credits'}
 SRC = ROOT / 'assets' / 'src' / 'audio'
 
 
@@ -15,7 +17,9 @@ def main():
     target = Path(sys.argv[1])
     data, total = {}, 0
     with tempfile.TemporaryDirectory() as td:
-        for f in sorted((SRC / 'bgm').glob('*.mp3')):
+        srcs = [f for f in sorted((SRC / 'bgm').glob('*.mp3')) if f.stem not in EXCLUDE]
+        srcs += sorted((SRC / 'songs').glob('*.m4a'))   # vocal ending songs (Suno)
+        for f in srcs:
             out = Path(td) / (f.stem + '.mp3')
             subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', str(f), '-c:a', 'libmp3lame', '-b:a', '64k', '-joint_stereo', '1', str(out)], check=True)
             b = out.read_bytes()
