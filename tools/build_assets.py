@@ -2,7 +2,7 @@
 """Slice the source sheets in assets/src into individual WebP sprites and
 embed them into the game HTML.
 
-Usage: python3 tools/build_assets.py soul_tether_v51_title_ui.html
+Usage: python3 tools/build_assets.py soul_tether.html
 
 The script is idempotent: it rewrites only
   * the `keyVisual` / `portraitSheet` entries of ART.paths
