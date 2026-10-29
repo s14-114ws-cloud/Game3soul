@@ -358,6 +358,9 @@ def build():
     from floor_tiles import frames as tile_frames
     for k, v in tile_frames(SRC).items():
         sprites[f'prop.{k}'] = v
+    from extra_frames import frames as extra_frames
+    for k, v in extra_frames(SRC).items():
+        sprites[f'prop.{k}'] = v
     from st1_frames import frames as st1_frames
     for k, im in st1_frames(SRC).items():
         sprites[f'prop.{k}'] = im
