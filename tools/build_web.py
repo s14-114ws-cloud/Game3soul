@@ -86,7 +86,11 @@ def main():
             '<meta name="apple-mobile-web-app-title" content="SOUL TETHER"><meta name="theme-color" content="#04060d">'
             "<script>if('serviceWorker' in navigator&&location.protocol==='https:'){navigator.serviceWorker.register('sw.js').then(r=>{"
             "const warm=()=>{const w=r.active||navigator.serviceWorker.controller;w&&w.postMessage('warm')};"
-            "addEventListener('load',()=>setTimeout(warm,4000))}).catch(()=>{})}</script>")
+            "addEventListener('load',()=>setTimeout(warm,4000))}).catch(()=>{});"
+            "navigator.serviceWorker.addEventListener('message',e=>{const m=e.data||{};let el=document.getElementById('offlineTag');"
+            "if(!el){el=document.createElement('div');el.id='offlineTag';el.style.cssText='position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:96;padding:3px 12px;border-radius:12px;background:rgba(6,8,16,.78);border:1px solid rgba(230,180,95,.45);color:#ffe6bd;font:11px DotGothic16,sans-serif;pointer-events:none;transition:opacity .6s';document.body.appendChild(el)}"
+            "if(m.t==='prog'){el.textContent='オフライン用に保存中… '+m.p+'%';el.style.opacity=document.getElementById('menu')&&getComputedStyle(document.getElementById('menu')).display!=='none'?1:0}"
+            "else if(m.t==='ready'&&m.fresh){el.textContent='保存完了：次からはオフラインでも遊べます';el.style.opacity=1;setTimeout(()=>el.style.opacity=0,4000)}})}</script>")
     k = html.index('</head>')
     html = html[:k] + head + html[k:]
     (DIST / 'index.html').write_text(html, encoding='utf-8')
@@ -103,7 +107,9 @@ self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.me
 // after the first launch, fetch the rest of the game quietly so later launches are instant and offline-ready
 self.addEventListener('message',e=>{if(e.data!=='warm')return;e.waitUntil(caches.open('st-assets').then(async c=>{const have=new Set((await c.keys()).map(r=>new URL(r.url).pathname.split('/').pop()));
  const keep=new Set(ASSETS.map(a=>a.split('/').pop()));for(const r of await c.keys())if(!keep.has(new URL(r.url).pathname.split('/').pop()))await c.delete(r);
- for(const a of ASSETS){if(have.has(a.split('/').pop()))continue;try{const n=await fetch(a);if(n.ok)await c.put(a,n)}catch(_){}}}))});
+ const say=async m=>{for(const cl of await self.clients.matchAll())cl.postMessage(m)};let done=0,miss=ASSETS.filter(a=>!have.has(a.split('/').pop()));
+ if(!miss.length){await say({t:'ready',fresh:false});return}
+ for(const a of miss){try{const n=await fetch(a);if(n.ok)await c.put(a,n)}catch(_){}if(++done%%20===0)await say({t:'prog',p:Math.round(done*100/miss.length)})}await say({t:'ready',fresh:true})}))});
 """ % (ver, json.dumps(sorted(assets)))
     (DIST / 'sw.js').write_text(sw, encoding='utf-8')
 
