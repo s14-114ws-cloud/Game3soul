@@ -37,5 +37,5 @@ python3 tools/build_web.py                       # 1ファイル版 → dist/（
 ## クレジット
 
 - フォント：DotGothic16（SIL Open Font License 1.1, Fontworks Inc.）
-- エンディング曲：Suno（「届かない朝」「ふたりの朝」）
+- 音楽：Suno（主題歌「魂の糸」、エンディング「届かない朝」「ふたりの朝」、ステージ・ボス曲）
 - ドット絵・イラスト：ChatGPT

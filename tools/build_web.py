@@ -42,16 +42,20 @@ def main():
 
     # 1. audio: original files instead of the embedded 64 kbps copies
     audio = {}
-    for f in sorted((AUD / 'bgm').glob('*.mp3')):
-        if f.stem not in SKIP_EMBED:
-            audio[f.stem] = put(f.read_bytes(), 'mp3', assets)
-    for f in sorted((AUD / 'se').glob('*.mp3')):
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from audio_sources import used_music, encode, source, se_files
+    for name in used_music(html):
+        src = source(name)
+        if src.suffix == '.m4a':   # ending songs: original AAC first, MP3 fallback
+            mp3 = encode(name, DIST / 'tmp.mp3', '192k')
+            audio[name] = [put(src.read_bytes(), 'm4a', assets), put(mp3.read_bytes(), 'mp3', assets)]
+        elif src.parent.name == 'suno':
+            audio[name] = put(encode(name, DIST / 'tmp.mp3', '192k').read_bytes(), 'mp3', assets)
+        else:
+            audio[name] = put(src.read_bytes(), 'mp3', assets)
+    (DIST / 'tmp.mp3').unlink(missing_ok=True)
+    for f in se_files():
         audio[f.stem] = put(f.read_bytes(), 'mp3', assets)
-    for f in sorted((AUD / 'songs').glob('*.m4a')):
-        mp3 = DIST / 'tmp.mp3'
-        subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', str(f), '-c:a', 'libmp3lame', '-b:a', '192k', str(mp3)], check=True)
-        audio[f.stem] = [put(f.read_bytes(), 'm4a', assets), put(mp3.read_bytes(), 'mp3', assets)]   # AAC first, MP3 fallback
-        mp3.unlink()
     lines = html.split('\n')
     i = [k for k, l in enumerate(lines) if l.startswith('const AUDIO_DATA=')][0]
     lines[i] = 'const AUDIO_DATA=' + json.dumps(audio, separators=(',', ':')) + ';'
